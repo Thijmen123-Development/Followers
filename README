@@ -1,0 +1,21 @@
+# TikTok follower counter — GitHub Pages
+
+## Uploaden
+1. Maak op GitHub een nieuwe repository, bijvoorbeeld `tiktok-follower-counter`.
+2. Upload `index.html` naar de hoofdmap van de repository.
+3. Open **Settings → Pages**.
+4. Kies bij **Build and deployment** voor **Deploy from a branch**.
+5. Kies branch `main` en map `/ (root)`, en klik op **Save**.
+6. Wacht tot GitHub de website publiceert. De URL verschijnt bovenaan bij Pages.
+
+GitHub Pages zoekt naar `index.html` in de gekozen publicatiemap.
+
+## Belangrijk over de live TikTok-teller
+De pagina probeert de publieke profielinformatie via een externe profielservice op te halen.
+Die service is niet van GitHub of TikTok. De automatische teller werkt alleen als de service
+beschikbaar is, het juiste antwoord teruggeeft en browserverzoeken vanaf jouw GitHub Pages-site
+toestaat (CORS). TikTok garandeert geen openbare, anonieme API voor willekeurige gebruikersnamen.
+Als de teller niet laadt, is een betrouwbare oplossing een eigen backend/API-proxy of een
+officiële TikTok API-koppeling; alleen GitHub Pages kan geen geheime API-sleutels veilig bewaren.
+
+De pagina ververst de aanvraag elke 2 seconden. De externe dienst kan dit beperken of blokkeren.
