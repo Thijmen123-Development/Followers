@@ -55,38 +55,33 @@
     const username = "thijmenx.official";
     const refreshInterval = 2_000;
     const profileUrl = `https://www.tiktok.com/@${username}`;
-
-    async function fetchProfile(endpoint) {
-      const url = `${endpoint}?url=${encodeURIComponent(profileUrl)}&t=${Date.now()}`;
-      const response = await fetch(url, { cache: "no-store" });
-      if (!response.ok) throw new Error(`API-fout ${response.status}`);
-      const data = await response.json();
-
-      // De profiel-API geeft followers direct terug; metrics kan een profiel
-      // automatisch herkennen en hetzelfde profielresultaat leveren.
-      const followers = data.followers ?? data.data?.followers ?? data.profile?.followers;
-      if (typeof followers !== "number") {
-        throw new Error(data.error || "API gaf geen volgersaantal terug");
-      }
-      return followers;
-    }
+    const apiUrl = `https://pulse.walls.sh/profile?url=${encodeURIComponent(profileUrl)}`;
 
     async function updateFollowers() {
       const status = document.getElementById("status");
       try {
-        let followers;
-        try {
-          followers = await fetchProfile("https://pulse.walls.sh/profile");
-        } catch (firstError) {
-          followers = await fetchProfile("https://pulse.walls.sh/metrics");
+        const response = await fetch(apiUrl, { cache: "no-store" });
+        if (!response.ok) {
+          throw new Error(`De gegevensdienst gaf HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+        const followers = data.followers ?? data.data?.followers;
+
+        if (typeof followers !== "number") {
+          throw new Error(data.error || "Geen volgersaantal in het API-antwoord");
         }
 
         document.getElementById("count").textContent =
           new Intl.NumberFormat("nl-NL").format(followers);
         status.textContent = "Automatisch bijgewerkt · elke 2 sec.";
       } catch (error) {
-        status.textContent = "Laden mislukt: " + error.message;
-        console.error("TikTok follower count:", error);
+        console.error("TikTok follower counter:", error);
+        if (error instanceof TypeError && error.message === "Failed to fetch") {
+          status.textContent = "Verbinding geblokkeerd (CORS/netwerk).";
+        } else {
+          status.textContent = error.message;
+        }
       }
     }
 
